@@ -186,6 +186,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     user.passwordExpTime = undefined;
     user.passwordResetCode = undefined;
 
+
     user.password = req.body.newPassword;
     user.save();
 
