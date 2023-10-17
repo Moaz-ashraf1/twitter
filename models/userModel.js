@@ -17,14 +17,20 @@ const userSchema = new mongoose.Schema({
         require: [true, "password required"],
         minlength: [6, "Too short password "],
       },
-      
-    phone: String,
-    
-    profileImage: String,
-    role: {
+      changePasswordAt: {
+        type:Date,
+        default: Date.now()
+      },
+      phone: String,
+      profileImage: String,
+      role: {
         type: String,
         enum: ["user", "manager", "admin"],
         default: "user",
+      },
+      active:{
+        type:Boolean,
+        default: true,
       },
 
 },{timestamps:true })
