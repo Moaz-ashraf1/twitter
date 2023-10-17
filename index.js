@@ -7,6 +7,7 @@ require('dotenv').config({
 
 const app = express();
 const authRouter = require('./routes/authRouter')
+const {globalErrorHandler} = require("./middleware/errorMiddleware")
 
 app.use(express.json())
 app.use(morgan('dev'))
@@ -22,3 +23,6 @@ app.listen(port, ()=>{
 mongoose.connect(process.env.MONGODB_URI ).then(()=>{
     console.log("connecting to database successfully");
 })
+
+
+app.use(globalErrorHandler)
