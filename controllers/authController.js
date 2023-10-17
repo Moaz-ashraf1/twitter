@@ -7,6 +7,7 @@ const User = require("../models/userModel")
 const { sanitizeData } = require("../utils/sanitizeData")
 const AppError = require("../utils/appError")
 const { createToken } = require("../utils/creatToken")
+const { sendMail } = require("../utils/sendEmail")
 
 // @desc   signup
 // @route  GET /api/v1/auth/signup
@@ -118,9 +119,30 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     user.passwordResetCode = hasedResetCode;
     user.passwordExpTime = Date.now() + 10 * 60 * 1000;
     user.passwordResetVerified = false;
+    await user.save();
 
+    // 4) send reset code via email
+    const message = `Hi ${user.name},\n we received a request to reset the password on your Twitter Account.\n ${resetCode}\n Enter this code to complete the reset.\n Thanks for helping us keep your account secure.\n`;
 
+    try {
+        await sendMail({
+            to: user.email,
+            subject: "Your password reset code (vaild for 10 min)",
+            message,
+        })
+    } catch (error) {
+        console.log(error);
+        user.passwordResetCode = undefined;
+        user.passwordExpTime = undefined;
+        user.passwordResetVerified = undefined;
+        await user.save();
 
+        return next(new AppError("There is an error in sending email", 500));
+    }
+
+    res
+        .status(200)
+        .json({ status: "success", message: "Reset code sent to email" });
 
 
 });
