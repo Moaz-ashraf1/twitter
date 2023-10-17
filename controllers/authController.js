@@ -82,6 +82,15 @@ if (!currentUser) {
   next();
 });
 
- 
+//@desc Authorization (User Permissions)
+exports.allowedTo =(...roles)=>asyncHandler(async (req, res, next) => {
+    if (!roles.includes(req.currentUser.role)) {
+      return next(
+        new AppError("You are not allowed to access this route", 401)
+      );
+    }
+
+    next();
+  });
 
 
