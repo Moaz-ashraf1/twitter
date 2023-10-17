@@ -167,3 +167,30 @@ exports.vertifyPasswordResetCode = asyncHandler(async (req, res, next) => {
     });
 
 })
+
+// @desc   reset password
+// @route  POST /api/v1/auth/resetPassword
+// @access public
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+        return next(new AppError("user not found"));
+    }
+
+    if (!user.passwordResetVerified) {
+        return next(new AppError("Reset code not verified"));
+    }
+
+    user.passwordResetVerified = undefined;
+    user.passwordExpTime = undefined;
+    user.passwordResetCode = undefined;
+
+    user.password = req.body.newPassword;
+    user.save();
+
+    const token = await createToken(user._id);
+
+    res.status(200).json({ token });
+
+});
