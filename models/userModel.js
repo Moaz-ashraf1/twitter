@@ -1,45 +1,30 @@
-const mongoose = require('mongoose')
-const bcrypt= require('bcryptjs')
+const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        trim: true,
-        require: [true, "name required"],
-      },
-      email: {
-        type: String,
-        require: [true, "email required"],
-        unique: true
-      },
-      password: {
-        type: String,
-        require: [true, "password required"],
-        minlength: [6, "Too short password "],
-      },
-      changePasswordAt: {
-        type:Date,
-        default: Date.now()
-      },
-      phone: String,
-      profileImage: String,
-      role: {
-        type: String,
-        enum: ["user", "manager", "admin"],
-        default: "user",
-      },
-      active:{
-        type:Boolean,
-        default: true,
-      },
-      passwordResetCode:String,
-      passwordExpTime:Date,
-      passwordResetVerified:Boolean,
-      
+const userProfileSchema = new mongoose.Schema(
+    {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+        phone: String,
+        bio: {
+            type: String,
+            maxlength: 200
+        },
+        profilePhoto: String,
+        dateOfBirth: String,
 
-},{timestamps:true })
-userSchema.pre('save',async function(next){
-  this.password = await bcrypt.hash(this.password ,12);
-  next();
+
+    }, {
+    timestamps: true
 })
-module.exports = mongoose.model("User",userSchema)
+
+userProfileSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'userId',
+        select: "-_id name email ",
+
+    }),
+        next();
+});
+module.exports = mongoose.model("userProfile", userProfileSchema)

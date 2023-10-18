@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const JWT = require('jsonwebtoken')
 const crypto = require('crypto');
 
-const User = require("../models/userModel")
+const User = require("../models/authModel")
 const { sanitizeData } = require("../utils/sanitizeData")
 const AppError = require("../utils/appError")
 const { createToken } = require("../utils/creatToken")
@@ -31,7 +31,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     if (!(await bcrypt.compare(password, user.password)) || !user) {
         return next(new AppError("Incorrecte email or password", 401));
     }
-    const token = await createToken(user)
+    const token = await createToken(user, res)
     res.status(201).json({ data: sanitizeData(user), token })
 })
 

@@ -1,4 +1,4 @@
-const JWT = require("jsonwebtoken")
+const JWT = require('jsonwebtoken')
 
 exports.createToken = async (user, res) => {
     const token = await JWT.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
@@ -12,7 +12,6 @@ exports.createToken = async (user, res) => {
     if (process.env.NODE_ENV === 'production') {
         cookieOptions.secure = true
     }
-
-    res.cookie('JWT', token, cookieOptions)
+    res.cookie('jwt', token, cookieOptions)
     return token;
 }
