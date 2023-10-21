@@ -1,4 +1,6 @@
 const asyncHandler = require("express-async-handler");
+const bcrypt = require('bcryptjs')
+
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 
@@ -69,4 +71,17 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         message: "User deleted successfully"
     })
+})
+
+exports.changeUserPassword = asyncHandler(async (req, res, next) => {
+    const user = await User.findByIdAndUpdate({ _id: req.params.id }, {
+        password: await bcrypt.hash(req.body.newPassword, 12)
+    }, { new: true })
+
+    if (!user) {
+        return next(
+            new AppError(`No user for this id ${req.params.id}`, 400)
+        );
+    }
+    res.status(200).json({ user });
 })

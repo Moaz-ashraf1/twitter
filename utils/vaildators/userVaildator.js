@@ -1,5 +1,7 @@
 const { check } = require("express-validator");
 const { default: slugify } = require("slugify");
+const bcrypt = require("bcrypt")
+
 const vaildatorMiddleware = require("../../middleware/validatorMiddleware");
 
 const User = require("../../models/userModel")
@@ -98,3 +100,32 @@ exports.deleteUserVaildator = [
 
     vaildatorMiddleware,
 ];
+
+exports.changeUserPasswordVaildator = [
+    check("id").isMongoId().withMessage("invaid user id format"),
+
+    check("newPassword")
+        .notEmpty()
+        .withMessage("You must enter your new password"),
+
+    check("confirmPassword")
+        .notEmpty()
+        .withMessage("You must enter your new password "),
+
+    check("currentPassword").notEmpty()
+        .withMessage("You must enter your current password").custom(async (value, { req }) => {
+            const user = await User.findById(req.params.id)
+
+            if (!user) throw new Error("There is no user for this id");
+
+            const isCorrectPassword = await bcrypt.compare(value, user.password)
+
+            if (!isCorrectPassword) throw new Error(" Incorrect current password");
+
+            if (req.body.newPassword !== req.body.confirmPassword)
+                throw new Error("The password confirmation is incorrect");
+            return true;
+
+        })
+
+    , vaildatorMiddleware]
