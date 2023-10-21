@@ -33,6 +33,14 @@ const userSchema = new mongoose.Schema({
   passwordResetCode: String,
   passwordExpTime: Date,
   passwordResetVerified: Boolean,
+  phone: String,
+  bio: {
+    type: String,
+    maxlength: 200
+  },
+  profilePhoto: String,
+  dateOfBirth: String,
+
 
 
 }, { timestamps: true })

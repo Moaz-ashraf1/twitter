@@ -7,14 +7,14 @@ require('dotenv').config({
 
 const app = express();
 const authRouter = require('./routes/authRouter')
-const userRouter = require('./routes/userProfileRouter')
+
 const { globalErrorHandler } = require("./middleware/errorMiddleware")
 
 app.use(express.json())
 app.use(morgan('dev'))
 
 app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/user', userRouter)
+
 
 const port = 8000
 app.listen(port, () => {
