@@ -32,3 +32,24 @@ exports.signupVaildator =
 
         vaildatorMiddleware
     ]
+
+exports.loginVaildator =
+    [
+
+
+        check("email").notEmpty()
+            .withMessage("User must have an email ")
+            .isEmail()
+            .withMessage("Invalid email address").custom(async (value) => {
+                const user = await User.findOne({ email: value });
+                if (!user) {
+                    throw new Error("no user with this email address");
+                }
+                return true;
+            }),
+
+        check("password").notEmpty().withMessage("User must enter a password")
+        ,
+
+        vaildatorMiddleware
+    ]
