@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const JWT = require('jsonwebtoken')
 const crypto = require('crypto');
 
-const User = require("../models/authModel")
+const User = require("../models/userModel")
 const { sanitizeData } = require("../utils/sanitizeData")
 const AppError = require("../utils/appError")
 const { createToken } = require("../utils/creatToken")

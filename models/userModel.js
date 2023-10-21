@@ -7,25 +7,48 @@ const userSchema = new mongoose.Schema({
     trim: true,
     require: [true, "name required"],
   },
+  slug: {
+    type: String,
+    lowercase: true,
+  },
   email: {
     type: String,
     require: [true, "email required"],
-    unique: true
+    unique: true,
+    lowercase: true,
+
+  },
+  phone: String,
+  bio: {
+    type: String,
+    maxlength: 200
+  },
+  profileImage: {
+    type: String,
+    default: 'default.jpg',
   },
   password: {
     type: String,
     require: [true, "password required"],
     minlength: [6, "Too short password "],
   },
-  changePasswordAt: {
-    type: Date,
-    default: Date.now()
-  },
   role: {
     type: String,
     enum: ["user", "manager", "admin"],
     default: "user",
   },
+
+  birthDate: String,
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+  },
+
+
+  changePasswordAt: {
+    type: Date,
+  },
+
   active: {
     type: Boolean,
     default: true,
@@ -33,13 +56,7 @@ const userSchema = new mongoose.Schema({
   passwordResetCode: String,
   passwordExpTime: Date,
   passwordResetVerified: Boolean,
-  phone: String,
-  bio: {
-    type: String,
-    maxlength: 200
-  },
-  profilePhoto: String,
-  dateOfBirth: String,
+
 
 
 
@@ -47,5 +64,11 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
+})
+
+userSchema.pre(/^find/, async function (next) {
+  this.find({ active: true });
+  next();
+
 })
 module.exports = mongoose.model("User", userSchema)
