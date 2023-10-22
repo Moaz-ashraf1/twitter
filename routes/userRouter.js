@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { protect, allowedTo } = require("../controllers/authController")
-const { createUser, getAllUsers, getUser, updateUser, deleteUser, changeUserPassword, uploadUserImage } = require("../controllers/userController")
+const { createUser, getAllUsers, getUser, updateUser, deleteUser, changeUserPassword, uploadUserImage, resizeImage } = require("../controllers/userController")
 const { createUserValidator, getUserVaildator, updateUserValidator, deleteUserVaildator, changeUserPasswordVaildator } = require("../utils/vaildators/userVaildator")
 
 
@@ -10,7 +10,7 @@ const { createUserValidator, getUserVaildator, updateUserValidator, deleteUserVa
 
 router.route('/').get(protect, allowedTo('admin'), getAllUsers).
 
-    post(protect, allowedTo('admin'), uploadUserImage, createUserValidator, createUser);
+    post(protect, allowedTo('admin'), uploadUserImage, resizeImage, createUserValidator, createUser);
 
 router.route('/:id').get(protect, allowedTo('admin'), getUserVaildator, getUser).put(protect, allowedTo('admin'), updateUserValidator, updateUser).delete(protect, allowedTo('admin'), deleteUserVaildator, deleteUser)
 

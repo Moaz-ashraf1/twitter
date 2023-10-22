@@ -2,22 +2,28 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require('bcryptjs')
 const multer = require('multer')
 const { v4: uuidv4 } = require('uuid');
-
+const sharp = require('sharp');
 
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 
 
 //Upload Image Using Multer
-const multerStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads/users')
-    },
-    filename: function (req, file, cb) {
-        const fileName = `user-${uuidv4()}-${Date.now()}.${file.mimetype.split('/')[1]}`
-        cb(null, fileName)
-    }
-})
+
+// 1- DiskStorage engine
+// const multerStorage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, './uploads/users')
+//     },
+//     filename: function (req, file, cb) {
+//         const fileName = `user-${uuidv4()}-${Date.now()}.${file.mimetype.split('/')[1]}`
+//         cb(null, fileName)
+//     }
+// })
+
+// 2- MemoryStorage engine
+const multerStorage = multer.memoryStorage();
+
 const multerFilter = function (req, file, cb) {
     if (file.mimetype.startsWith('image')) {
         cb(null, true);
@@ -28,6 +34,18 @@ const multerFilter = function (req, file, cb) {
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter })
 
 exports.uploadUserImage = upload.single('profileImage')
+
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+    const fileName = `user-${uuidv4()}-${Date.now()}.jpeg`
+
+    await sharp(req.file.buffer)
+        .resize(400, 400)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`uploads/users/${fileName}`);
+
+    next();
+});
 
 // @desc   Create user
 // @route  POST /api/v1/users
