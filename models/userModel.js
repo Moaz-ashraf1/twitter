@@ -71,4 +71,13 @@ userSchema.pre(/^find/, async function (next) {
   next();
 
 })
+
+userSchema.post('init', (doc) => {
+  doc.profileImage = `${process.env.BASE_URL}/users/${doc.profileImage}`
+
+})
+userSchema.post('save', (doc) => {
+  doc.profileImage = `${process.env.BASE_URL}users/${doc.profileImage}`
+
+})
 module.exports = mongoose.model("User", userSchema)
