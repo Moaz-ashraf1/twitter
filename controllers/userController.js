@@ -38,11 +38,29 @@ exports.uploadUserImage = upload.single('profileImage')
 exports.resizeImage = asyncHandler(async (req, res, next) => {
     const fileName = `user-${uuidv4()}-${Date.now()}.jpeg`
 
+    const circleSize = 400;
+
     await sharp(req.file.buffer)
-        .resize(400, 400)
+        .resize(circleSize, circleSize)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
+        .composite([
+            {
+                input: Buffer.from(
+                    `<svg><circle cx="${circleSize / 2}" cy="${circleSize / 2}" r="${circleSize / 2}" fill="white"/></svg>`
+                ),
+                blend: 'dest-in',
+            },
+        ])
         .toFile(`uploads/users/${fileName}`);
+
+    // await sharp(req.file.buffer)
+    //     .resize(400, 400)
+    //     .toFormat('jpeg')
+    //     .jpeg({ quality: 90 })
+    //     .toFile(`uploads/users/${fileName}`);
+
+    req.body.profileImage = fileName;
 
     next();
 });
