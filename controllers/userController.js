@@ -18,7 +18,14 @@ const multerStorage = multer.diskStorage({
         cb(null, fileName)
     }
 })
-const upload = multer({ storage: multerStorage })
+const multerFilter = function (req, file, cb) {
+    if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    } else {
+        cb(new AppError("Only images allowed", 400), false)
+    }
+}
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter })
 
 exports.uploadUserImage = upload.single('profileImage')
 
