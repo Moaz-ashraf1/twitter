@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
   phone: String,
   bio: {
     type: String,
-    maxlength: 200
+    maxlength: 200,
+    default: "Hello, I'm new on Twitter"
   },
   profileImage: {
     type: String,
