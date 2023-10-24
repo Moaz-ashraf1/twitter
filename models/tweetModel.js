@@ -21,7 +21,22 @@ const tweetSchema = new mongoose.Schema({
         }
     ],
 
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+        },
+        coordinates: [Number],
+
+    },
+
+    formattedAddress: String,
+
+
 
 }, { timestamps: true })
-
+tweetSchema.post('save', (document) => {
+    document.location = undefined;
+})
 module.exports = mongoose.model("Tweet", tweetSchema)
