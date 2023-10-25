@@ -75,16 +75,13 @@ userSchema.pre(/^find/, async function (next) {
 
 })
 
-userSchema.post('init', (doc) => {
-  doc.profileImage = `${process.env.BASE_URL}/users/${doc.profileImage}`
 
-})
-userSchema.post('save', (doc) => {
-  doc.profileImage = `${process.env.BASE_URL}users/${doc.profileImage}`
 
-})
+userSchema.post('init', function (doc) {
+  doc.profileImageLink = `${process.env.BASE_URL}/users/${doc.profileImage}`;
+});
+
+userSchema.post('save', function (doc) {
+  doc.profileImageLink = `${process.env.BASE_URL}/users/${doc.profileImage}`;
+});
 module.exports = mongoose.model("User", userSchema)
-
-//$2a$12$KY3a7umULRG1IDpWHQZQy.9N6ELLMPs7o2owecM8NP7v4QUe4p4lG
-
-// $2a$12$/FDzJSPwUSy2NJRYUX0SIe.luZrvk/ki8ix2ziAkqDZIT5ExFT7J.

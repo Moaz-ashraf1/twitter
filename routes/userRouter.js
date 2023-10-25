@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const { protect, allowedTo } = require("../controllers/authController")
-const { createUser, getAllUsers, getUser, updateUser, deleteUser, changeUserPassword, uploadUserImage, resizeImage } = require("../controllers/userController")
+const { createUser, getAllUsers, getUser, updateUser, deleteUser, changeUserPassword, uploadUserImage, resizeImage, getAllFollowings, getAllFollowers } = require("../controllers/userController")
 const { createUserValidator, getUserVaildator, updateUserValidator, deleteUserVaildator, changeUserPasswordVaildator } = require("../utils/vaildators/userVaildator")
 
 
 
+router.route('/getAllFollowings').get(protect, getAllFollowings);
+router.route('/getAllFollowers').get(protect, getAllFollowers);
 
 router.route('/').get(protect, allowedTo('admin'), getAllUsers).
 

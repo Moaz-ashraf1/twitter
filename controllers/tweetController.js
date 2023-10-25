@@ -95,7 +95,6 @@ exports.likeOrDislikeTweet = asyncHandler(async (req, res, next) => {
 
 })
 
-
 exports.follow = asyncHandler(async (req, res, next) => {
     if (req.params.followingUserId === req.currentUser._id) return next(new AppError("you cannot follow yourself", 404))
     const followingUser = await User.findById(req.params.followingUserId);

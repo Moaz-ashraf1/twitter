@@ -131,3 +131,33 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
     }
     res.status(200).json({ user });
 })
+
+
+exports.getAllFollowings = asyncHandler(async (req, res, next) => {
+    req.currentUser;
+
+    const populatedUser = await User.findById(req.currentUser._id)
+        .populate({
+            path: "Following",
+            select: "-_id name bio"
+        })
+        ;
+
+    const followings = populatedUser.Following;
+
+    res.status(200).json({ followings });
+});
+exports.getAllFollowers = asyncHandler(async (req, res, next) => {
+    req.currentUser;
+
+    const populatedUser = await User.findById(req.currentUser._id)
+        .populate({
+            path: "Followers",
+            select: "-_id name bio"
+        })
+        ;
+
+    const Followers = populatedUser.Followers;
+
+    res.status(200).json({ Followers });
+});
