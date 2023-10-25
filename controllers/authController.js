@@ -13,7 +13,9 @@ const { sendMail } = require("../utils/sendEmail")
 // @route  GET /api/v1/auth/signup
 // @access public
 exports.signUp = asyncHandler(async (req, res, next) => {
-    const { name, email, password, role } = req.body;
+    let { name, email, password, role } = req.body;
+
+    password = await bcrypt.hash(password, 12)
     const user = await User.create({ name, email, password, role })
 
 
@@ -27,6 +29,7 @@ exports.signUp = asyncHandler(async (req, res, next) => {
 // @access public
 exports.login = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body
+
     const user = await User.findOne({ email: email });
     if (!(await bcrypt.compare(password, user.password)) || !user) {
         return next(new AppError("Incorrecte email or password", 401));

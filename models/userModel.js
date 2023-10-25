@@ -38,18 +38,14 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "manager", "admin"],
     default: "user",
   },
-
   birthDate: String,
   gender: {
     type: String,
     enum: ["male", "female"],
   },
-
-
   changePasswordAt: {
     type: Date,
   },
-
   active: {
     type: Boolean,
     default: true,
@@ -58,14 +54,20 @@ const userSchema = new mongoose.Schema({
   passwordExpTime: Date,
   passwordResetVerified: Boolean,
 
+  Following: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'User'
+  }],
+  Followers: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'User'
+  }]
+
 
 
 
 }, { timestamps: true })
-userSchema.pre('save', async function (next) {
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
-})
+
 
 userSchema.pre(/^find/, async function (next) {
   this.find({ active: true });
@@ -82,3 +84,7 @@ userSchema.post('save', (doc) => {
 
 })
 module.exports = mongoose.model("User", userSchema)
+
+//$2a$12$KY3a7umULRG1IDpWHQZQy.9N6ELLMPs7o2owecM8NP7v4QUe4p4lG
+
+// $2a$12$/FDzJSPwUSy2NJRYUX0SIe.luZrvk/ki8ix2ziAkqDZIT5ExFT7J.

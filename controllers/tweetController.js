@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const NodeGeocoder = require('node-geocoder');
+const User = require("../models/userModel");
 
 const Tweet = require("../models/tweetModel");
 const AppError = require("../utils/appError");
@@ -91,5 +92,49 @@ exports.likeOrDislikeTweet = asyncHandler(async (req, res, next) => {
     await tweet.save()
 
     res.status(200).json({ tweet });
+
+})
+
+
+exports.follow = asyncHandler(async (req, res, next) => {
+    if (req.params.followingUserId === req.currentUser._id) return next(new AppError("you cannot follow yourself", 404))
+    const followingUser = await User.findById(req.params.followingUserId);
+
+    const followerIndex = followingUser.Followers.indexOf(req.currentUser.id);
+    if (followerIndex === -1) {
+        followingUser.Followers.push(req.currentUser.id);
+        req.currentUser.Following.push(followingUser._id);
+
+        await followingUser.save()
+        await req.currentUser.save()
+
+        res.status(200).json({ message: 'your are now follow this user' })
+    } else {
+        res.status(200).json({ message: 'You are already following this user' })
+    }
+
+
+})
+
+exports.unfollow = asyncHandler(async (req, res, next) => {
+    if (req.params.followingUserId === req.currentUser._id) return next(new AppError("you cannot unfollow yourself", 404))
+
+    const unfollowingUser = await User.findById(req.params.followingUserId);
+
+    const followerIndex = unfollowingUser.Followers.indexOf(req.currentUser.id);
+    const followingIndex = req.currentUser.Following.indexOf(unfollowingUser.id);
+
+    if (followerIndex !== -1) {
+        unfollowingUser.Followers.splice(followerIndex, 1);
+        req.currentUser.Following.splice(followingIndex, 1);
+
+        await unfollowingUser.save()
+        await req.currentUser.save()
+
+        res.status(200).json({ message: 'your are now unfollow this user' })
+    } else {
+        res.status(200).json({ message: 'You are already unfollowing this user' })
+    }
+
 
 })
