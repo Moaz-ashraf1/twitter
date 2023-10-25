@@ -111,7 +111,7 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
 
     if (!user) {
         return next(
-            new AppError(`No document for this id ${req.params.Id}`, 400)
+            new AppError(`No user for this id ${req.params.Id}`, 400)
         );
     }
     res.status(200).json({

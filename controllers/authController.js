@@ -80,7 +80,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
         return next(new AppError("This account has been deactivated"), 401);
     }
     req.currentUser = currentUser;
-    console.log(req.currentUser)
+
     next();
 });
 

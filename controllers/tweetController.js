@@ -16,7 +16,7 @@ exports.createTweet = asyncHandler(async (req, res, next) => {
 
     const geocoder = NodeGeocoder({
         provider: 'mapbox',
-        apiKey: 'pk.eyJ1IjoibW9hemFzaHJhZiIsImEiOiJjbGtzOWg3azcwMTI4M2RwbjFrOGVmZXV0In0.rCbQNfmfZQ2pGrgHK3JGXw',
+        apiKey: process.env.API_KEY,
     });
 
     geocoder.reverse({ lat: latitude, lon: longitude })
@@ -37,6 +37,40 @@ exports.createTweet = asyncHandler(async (req, res, next) => {
 
 
 
+});
+
+exports.getAllTweets = asyncHandler(async (req, res, next) => {
+    const tweets = await Tweet.find({ author: req.currentUser.id });
+    if (!tweets) return next(new AppError("no tweets found for you", 404))
+
+    res.status(200).json({ tweets })
+})
+
+exports.updateTweet = asyncHandler(async (req, res, next) => {
+    const tweet = await Tweet.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+    if (!tweet) return next(new AppError("no tweet found for this id", 404))
+
+    res.status(200).json({ tweet })
+})
+
+exports.getTweet = asyncHandler(async (req, res, next) => {
+    const tweet = await Tweet.findOne({ _id: req.params.id });
+    if (!tweet) return next(new AppError("no tweet found for this id", 404))
+
+    res.status(200).json({ tweet })
+})
+
+exports.deleteTweet = asyncHandler(async (req, res, next) => {
+    try {
+        await Tweet.deleteOne({ _id: req.params.id });
+        res.status(200).json({
+            message: "Tweet deleted successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to delete tweet"
+        });
+    }
 });
 
 exports.likeOrDislikeTweet = asyncHandler(async (req, res, next) => {
